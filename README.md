@@ -61,3 +61,47 @@ int main()
     close(cfd);
     return 0;
 }
+int main()
+{
+     int fd = socket(AF_INET,sock_STREAM,0);
+    if(fd==-1)
+    {
+        perror("socket");
+        return -1;
+    }
+    struct sockaddr_in saddr;
+    saddr.sin_family=AF_INET;
+    saddr.sin_port=htons(12345);
+    inet_pton(AF_INET,"192.168.43.210",&saddr.sin_addr.s_addr);
+    int ret connect(fd,(steuct sockaddr*)&saddr,sizeof(saddr));
+    if(ret == -1)
+    {
+        perror("connect");
+        return -1;
+    }
+    int number=0;
+    while(1)
+    {
+        char buff[1024];
+        sprintf(buff,"你好，hello word,%d...\n",number++);
+        send(fd,buff,strlen(buff)+1,0);
+        memset(buff,0,sizeof(buff));
+        int len = recv(cfd,buff,sizeof(buff),0);
+        if(len>0)
+        {
+            peinrf("client say:%s",buff);
+        }
+        else if(len==0)
+        {
+            printf("服务器断开连接..\n");
+            break;
+        }
+        else
+        {
+            perror("recv");
+            break;
+        }
+    }
+    close(fd);
+    return 0;
+}
